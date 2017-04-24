@@ -1,0 +1,66 @@
+[
+   {
+      "restaurantName":"Bronco",
+      "address":"39 Rue des Petites Écuries, 75010 Paris",
+      "lat":48.8737815,
+      "long":2.3501649,
+      "ratings":[
+         {
+            "stars":4,
+            "comment":"Un excellent restaurant, j'y reviendrai ! Par contre il vaut mieux aimer la viande."
+         },
+         {
+            "stars":5,
+            "comment":"Tout simplement mon restaurant préféré !"
+         }
+      ]
+   },
+   {
+      "restaurantName":"Babalou",
+      "address":"4 Rue Lamarck, 75018 Paris",
+      "lat":48.8865035,
+      "long":2.3442197,
+      "ratings":[
+         {
+            "stars":5,
+            "comment":"Une minuscule pizzeria délicieuse cachée juste à côté du Sacré choeur !"
+         },
+         {
+            "stars":3,
+            "comment":"J'ai trouvé ça correct, sans plus"
+         }
+      ]
+   },
+   {
+      "restaurantName":"Le Barbecue",
+      "address":"3 Rue du Four, 06000 Nice",
+      "lat":43.698863,
+      "long":7.278767,
+      "ratings":[
+         {
+            "stars":5,
+            "comment":"J en ai rêver et je l ai eu cette délicieuse assiette de grillade..."
+         },
+         {
+            "stars":5,
+            "comment":"Pizzas délicieuses et bien garnies."
+         }
+      ]
+   },
+   {
+      "restaurantName":"Crêp'and Go",
+      "address":"17 Rue Barla, 06300 Nice",
+      "lat":43.701847,
+      "long":7.283055,
+      "ratings":[
+         {
+            "stars":5,
+            "comment":"Pizzas et crêpes délicieuses et bien garnis."
+         },
+         {
+            "stars":4,
+            "comment":"Bon repas très copieux."
+         }
+      ]
+   }
+]

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="description" content="Développeur d'application Frontend - Projet n° 7 : Lancez votre propre site d'avis de restaurants.">
+  <meta name="Author" content="Thierry Raimond" />
+  <meta name="Category" content="jeu, formation" />
+  <meta name="Copyright" content="Thierry Raimond" />
+  <meta name="Language" content="fr" />
+  <meta name="Description" content="Développeur d'application Frontend - Projet n° 7 : Lancez votre propre site d'avis de restaurants." />
+  <meta name="Distribution" content="global" />
+  <meta name="Identifier-URL" content="https://trsrv.ddns.net/oc/projet7/index.html" />
+  <meta name="Keywords" content="api, googleMaps, formation, avis, restaurant, frontend, javascript, jquery, projet" />
+  <meta name="Publisher" content="Thierry Raimond" />
+  <meta name="Revisit-After" content="30 days" />
+  <meta name="Robots" content="all" />
+  
+  <title>Développeur d'application Frontend - Projet n° 7 : Lancez votre propre site d'avis de restaurants</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <link rel="stylesheet" href="css/style.css">
+  
+</head>
+<body>
+
+  <h1 class="text-center">Projet 7 : Lancez votre propre site d'avis de restaurants</h1>
+  
+<!--   <button id="button1">Get JSON data</button> -->
+<div class="form-inline" style="padding-bottom:20px;">
+  <div class="form-group">
+  
+	<div class="input-group filtre" style="">
+	  <span class="input-group-addon">Afficher les restaurants ayant entre </span>
+	  <select class="form-control" id="filtreX">
+	    <option value="0" selected="selected">0</option>
+	    <option value="1">1</option>
+	    <option value="2">2</option>
+	    <option value="3">3</option>
+	    <option value="4">4</option>
+	    <option value="5">5</option>
+	  </select>
+	</div>
+    <div class="input-group filtre" style="">
+      <span class="input-group-addon">et </span>
+      <select class="form-control" id="filtreY">
+        <option value="5" selected="selected">5</option>
+        <option value="4">4</option>
+        <option value="3">3</option>
+        <option value="2">2</option>
+        <option value="1">1</option>
+        <option value="0">0</option>
+      </select>
+      <span class="input-group-addon"> étoile(s)</span>
+    </div>
+    	
+  </div>
+</div>
+  
+  <div class="container-fluid">
+	<div class="row">
+      <div class="col-sm-6 list-group" id="listeRestaurants"></div>
+      <div class="col-sm-6" id="map"></div>
+	</div>
+  </div>
+
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWBusf7e1H99lsCnwvJyrFpaGz3YFEABk&callback=initMap"></script>
+  <script src="js/restaurant.js"></script>
+  <script src="js/googleMap.js"></script>
+  <script src="js/controlleur.js"></script>
+</body>
+</html>
