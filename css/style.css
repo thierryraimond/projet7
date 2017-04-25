@@ -4,3 +4,5 @@
 /*     width: 100%; */
 }
 #listeRestaurants { padding-left:15px; }
+.note { color: orange; }
+.star { color: grey; }
