@@ -66,7 +66,44 @@
 	</div>
   </div>
 
-  
+<!-- Modal Création restaurant -->
+<div class="modal fade" id="genererRestaurant" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Souhaitez-vous créer un restaurant ?</h4>
+            </div>
+            <div class="modal-body">
+                <div class="input-group" style="padding-bottom: 10px;">
+                    <input class="form-control" id="nomNouveauRestaurant" name="nomNouveauRestaurant" placeholder="Saisissez le nom du restaurant et validez" value="" type="text" required>
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-success" id="btnValiderNomNouveauRestaurant">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                    </span>
+                </div>
+                <div class="alert alert-danger" style="display:none;" id="alertNouveauRestaurant" role="alert"></div>
+                <div class="row">
+                    <div class="col-xs-6" id="imageNouveauRestaurant">
+                        <img class="img-responsive" src="" />
+                    </div>
+                    <div class="col-xs-6">
+                        <div id="adresseNouveauRestaurant"></div>
+                        <div id="positionNouveauRestaurant">
+                            <span id="latitudeNouveauRestaurant"></span>
+                            , 
+                            <span id="longitudeNouveauRestaurant"></span>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnFin" type="button" class="btn btn-danger" data-dismiss="modal">Abandonner</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->  
 
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

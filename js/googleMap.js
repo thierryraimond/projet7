@@ -33,6 +33,7 @@ function initMap() {
 		});
 		return marker;
 	});
+
 	
 	// Quand on change le filtreX
 	$('#filtreX').on('change', function(){
@@ -52,6 +53,62 @@ function initMap() {
 			"filtreY = " + parseInt($(this).val())
 		);
 	});
+	
+	// quand on clique sur la carte une fenêtre modale apparait et propose de créer un restaurant
+	google.maps.event.addListener(map, 'click', function(event) {
+		$('#nomNouveauRestaurant').val(''); // le champ de saisie est vide
+		var location = event.latLng;
+		// On va utiliser la fonctionnalité Geocoder pour obtenir l'adresse à partir de la location
+		// @link: http://stackoverflow.com/questions/36892826/click-on-google-maps-api-and-get-the-address
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode({ 'latLng': location }, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				if (results[0]) {
+			        var adresse = results[0].formatted_address;
+			        $("#adresseNouveauRestaurant").text(adresse);
+			    }
+			}
+	    });
+		var urlStreetView = 'https://maps.googleapis.com/maps/api/streetview?'+
+			'size=' + propStreetView.size +
+			'&location=' + location.lat() + ',' + location.lng() +
+			'&key=' + propStreetView.key;
+		
+		$("#latitudeNouveauRestaurant").text(location.lat());
+		$("#longitudeNouveauRestaurant").text(location.lng());
+
+		$('#imageNouveauRestaurant img').attr('src', urlStreetView);
+		$('#genererRestaurant').modal('show');
+		
+		// quand on clique sur le bouton valider nom du nouveau restaurant
+		$('#btnValiderNomNouveauRestaurant').on('click', function() {
+			
+			// contrôle si le champ du nom du nouveau restaurant n'est pas vide
+			if($('#nomNouveauRestaurant').val() != '') {
+				// ajout du nouveau marqueur
+				placeMarker(map, event.latLng);
+				ajouterRestaurant();
+				$('#genererRestaurant').modal('hide');
+			} else {
+				$('#alertNouveauRestaurant').removeClass().addClass('alert alert-danger')
+				.text('le champ est vide')
+				.show(500).delay(3000).hide(500);
+			}
+		});
+		
+	});
+	// Ajouter un marqueur personnalisé sur la carte et un événément associé quand on clique dessus
+	function placeMarker(map, location) {
+		var n = markers.length;
+		markers[n] = new google.maps.Marker({
+			position: location,
+			icon: icons["restaurant"].icon,
+		    map: map
+		});
+		google.maps.event.addListener(markers[n], 'click', function() {
+			$('#collapse'+n).collapse('toggle');
+		});
+	};
 	
 	
 	// au changement du cadre de la carte (zoom, deplacement sur la carte, drag)
@@ -111,27 +168,4 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
                           'Error: Your browser doesn\'t support geolocation.');
 };
 
-// Ajouter un marqueur personnalisé sur la carte et un événément quand on clique dessus
-function ajouterMarqueur(restaurant, icons, map, type, i) {
-	var marker = new google.maps.Marker({
-		position: new google.maps.LatLng(restaurant[i].lat, restaurant[i].long),
-		icon: icons[type].icon,
-		map: map
-	});
-	google.maps.event.addListener(marker, 'click', function() {
-		$('#collapse'+i).collapse('toggle');
-	});
-};
-
-// Afficher tous les restaurants du fichier json sur la carte avec une icone personnalisée
-function afficherRestaurantsCarte(icons, map) {
-	var type = "restaurant";
-	var temp = [];
-	// On récupère la liste des restaurants du fichier json
-	$.getJSON("restaurants.json", function(restaurants) {
-		for(i in restaurants) {
-			ajouterMarqueur(restaurants, icons, map, type, i);
-		}
-	});
-};
 

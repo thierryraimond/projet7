@@ -6,3 +6,9 @@
 #listeRestaurants { padding-left:15px; }
 .note { color: orange; }
 .star { color: grey; }
+.flex-center { 
+	display: -webkit-flex; 
+	display: flex; 
+	-webkit-justify-content: center; 
+	justify-content: center; 
+}
