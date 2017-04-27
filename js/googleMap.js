@@ -20,19 +20,28 @@ function initMap() {
 			icon: 'img/restaurant_icon.png'
 		}
 	};
-	// tableau des marqueurs des restaurants
-	var markers = locations.map(function(location, i) {
-		// pour chaque location ajoute un marqueur restaurant personnalisé
-		var marker = new google.maps.Marker({
-			position: location,
+	
+	// créer un tableau de marqueur de restaurant
+	var markers = new Array();
+	// pour chaque restaurant on ajoute un marqueur personnalisé sur la carte
+	// et un événément associé quand on clique dessus
+	for (i in restaurants){
+		ajouterMarqueur(map,i, restaurants[i].lat, restaurants[i].long);
+	}
+	
+	// Ajoute un marqueur personnalisé au tableau markers et un écouteur d'événement associé au marqueur
+	function ajouterMarqueur(map, index, latitude, longitude) {
+		// création du nouveau marqueur sur la carte
+		markers[index] = new google.maps.Marker({
+			position: { lat: latitude, lng: longitude },
 			icon: icons["restaurant"].icon,
 			map: map
 		});
-		google.maps.event.addListener(marker, 'click', function() {
-			$('#collapse'+i).collapse('toggle');
-		});
-		return marker;
-	});
+		// ajoute également un écouteur d'événement quand on clique sur le marqueur
+		google.maps.event.addListener(markers[index], 'click', function() {
+			$('#collapse'+index).collapse('toggle');
+		});	
+	}
 
 	
 	// Quand on change le filtreX
@@ -78,38 +87,24 @@ function initMap() {
 		$("#longitudeNouveauRestaurant").text(location.lng());
 
 		$('#imageNouveauRestaurant img').attr('src', urlStreetView);
-		$('#genererRestaurant').modal('show');
-		
-		// quand on clique sur le bouton valider nom du nouveau restaurant
-		$('#btnValiderNomNouveauRestaurant').on('click', function() {
-			
-			// contrôle si le champ du nom du nouveau restaurant n'est pas vide
-			if($('#nomNouveauRestaurant').val() != '') {
-				// ajout du nouveau marqueur
-				placeMarker(map, event.latLng);
-				ajouterRestaurant();
-				$('#genererRestaurant').modal('hide');
-			} else {
-				$('#alertNouveauRestaurant').removeClass().addClass('alert alert-danger')
-				.text('le champ est vide')
-				.show(500).delay(3000).hide(500);
-			}
-		});
+		$('#genererRestaurant').modal('show');		
 		
 	});
-	// Ajouter un marqueur personnalisé sur la carte et un événément associé quand on clique dessus
-	function placeMarker(map, location) {
-		var n = markers.length;
-		markers[n] = new google.maps.Marker({
-			position: location,
-			icon: icons["restaurant"].icon,
-		    map: map
-		});
-		google.maps.event.addListener(markers[n], 'click', function() {
-			$('#collapse'+n).collapse('toggle');
-		});
-	};
 	
+	// quand on clique sur le bouton valider nom du nouveau restaurant de la fenêtre modale
+	$('#btnValiderNomNouveauRestaurant').on('click', function() {
+		// contrôle si le champ du nom du nouveau restaurant n'est pas vide
+		if($('#nomNouveauRestaurant').val() != '') {
+			ajouterRestaurant();
+			// ajout d'un nouveau marqueur restaurant et un écouteur d'événement associé
+			ajouterMarqueur(map, markers.length, parseFloat($("#latitudeNouveauRestaurant").text()), parseFloat($("#longitudeNouveauRestaurant").text()));
+			$('#genererRestaurant').modal('hide');
+		} else {
+			$('#alertNouveauRestaurant').removeClass().addClass('alert alert-danger')
+			.text('le champ est vide')
+			.show(500).delay(3000).hide(500);
+		}
+	});
 	
 	// au changement du cadre de la carte (zoom, deplacement sur la carte, drag)
     google.maps.event.addListener(map, 'bounds_changed', function() {
@@ -158,14 +153,16 @@ function initMap() {
       // Browser doesn't support Geolocation
       handleLocationError(false, infoWindow, map.getCenter());
     }
+    
+    //Browser doesn't support Geolocation
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+    };
 };
 
-//Browser doesn't support Geolocation
-function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(browserHasGeolocation ?
-                          'Error: The Geolocation service failed.' :
-                          'Error: Your browser doesn\'t support geolocation.');
-};
+
 
 
