@@ -19,6 +19,8 @@ $(function() {
 	// initialise googleMap
 	initMap();
 	
+
+	
 	/****************************************************************
 	 ***************** GESTION DES EVENEMENTS ***********************
 	 ****************************************************************/
@@ -70,7 +72,7 @@ $(function() {
 			// mettre à jour la moyenne des avis et le nombre d'avis
 			$('#moyenneAvis'+id).text(calculerMoyenneAvis(id));
 			$('#textMoyenneAvis'+id).text(calculerMoyenneAvis(id));
-			$('#nbAvis'+id).text(restaurants[id].ratings.length + " avis");
+			$('#nbAvis'+id).text(calculerTotalAvis(id) + " avis");
 			
 			$('#alert'+id).removeClass().addClass('alert alert-success')
 				.text('nouvel avis enregistré avec succès')
@@ -83,6 +85,19 @@ $(function() {
 				$('#star'+j+'_'+id).removeClass('note').addClass('star').css('color', 'grey');
 			}	
 		}
+	});
+	
+	// à chaque clique sur un cadre restaurant
+	$('#listeRestaurants').on('click', '.list-group-item', function(){
+		var id = $(this).attr('id').replace('restaurant','');
+		// test si l'élément de yelp existe
+		if (typeof($('#collapse'+id+' div').attr('id')) !== 'undefined') {
+			//alert($('#collapse'+id+' div').attr('id'));
+			$('#collapse'+id+' div').html('<i class="fa fa-cog fa-spin" style="font-size:30px;color:#D11D0D"></i><span style="color:#D11D0D;">...</span>');
+			yelpBusiness($('#collapse'+id+' div').attr('id'), id);
+		}
+
+		
 	});
 	
 });

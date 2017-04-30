@@ -18,6 +18,10 @@ function initMap() {
 		restaurant: {
 			name: 'Restaurant',
 			icon: 'img/restaurant_icon.png'
+		},
+		yelp: {
+			name: 'Restaurant',
+			icon: 'img/marqueur_yelp_32x32_trans.png'
 		}
 	};
 	
@@ -26,20 +30,22 @@ function initMap() {
 	// pour chaque restaurant on ajoute un marqueur personnalisé sur la carte
 	// et un événément associé quand on clique dessus
 	for (i in restaurants){
-		ajouterMarqueur(map,i, restaurants[i].lat, restaurants[i].long);
+		ajouterMarqueur(map, restaurants[i].lat, restaurants[i].long, "restaurant");
 	}
 	
 	// Ajoute un marqueur personnalisé au tableau markers et un écouteur d'événement associé au marqueur
-	function ajouterMarqueur(map, index, latitude, longitude) {
-		// création du nouveau marqueur sur la carte
+	function ajouterMarqueur(map, latitude, longitude, typeIcon) {
+		var index = markers.length; // récupère le nouvel index du tableau markers
+		// création du nouveau marqueur sur la carte et ajout de l'objet au tableau markers à la suite
 		markers[index] = new google.maps.Marker({
 			position: { lat: latitude, lng: longitude },
-			icon: icons["restaurant"].icon,
+			icon: icons[typeIcon].icon,
 			map: map
 		});
 		// ajoute également un écouteur d'événement quand on clique sur le marqueur
 		google.maps.event.addListener(markers[index], 'click', function() {
-			$('#collapse'+index).collapse('toggle');
+//			$('#collapse'+index).collapse('toggle');
+			$('#restaurant'+index).trigger('click');
 		});	
 	}
 
@@ -97,7 +103,7 @@ function initMap() {
 		if($('#nomNouveauRestaurant').val() != '') {
 			ajouterRestaurant();
 			// ajout d'un nouveau marqueur restaurant et un écouteur d'événement associé
-			ajouterMarqueur(map, markers.length, parseFloat($("#latitudeNouveauRestaurant").text()), parseFloat($("#longitudeNouveauRestaurant").text()));
+			ajouterMarqueur(map, parseFloat($("#latitudeNouveauRestaurant").text()), parseFloat($("#longitudeNouveauRestaurant").text()), "restaurant");
 			$('#genererRestaurant').modal('hide');
 		} else {
 			$('#alertNouveauRestaurant').removeClass().addClass('alert alert-danger')
@@ -140,7 +146,10 @@ function initMap() {
     			lat: position.coords.latitude,
     			lng: position.coords.longitude
     		};
-
+    		
+    		// appel fonction yelp avec la position de l'utilisateur
+    		yelpSearch(pos.lat, pos.lng);
+    		
     		infoWindow.setPosition(pos);
     		infoWindow.setContent('Vous êtes ici.');
     		map.setCenter(pos);
@@ -161,6 +170,116 @@ function initMap() {
                               'Error: The Geolocation service failed.' :
                               'Error: Your browser doesn\'t support geolocation.');
     };
+    
+    /*************************************************************
+     ************************* YELP ******************************
+     *************************************************************/
+    
+    // yelp search
+    function yelpSearch(latitude, longitude) {
+    	var terms = 'restaurants';
+//    	var near = 'San+Francisco';
+//    	var latitude = '37.788022';
+//    	var longitude = '-122.399797';
+    	var position = latitude + ',' + longitude;
+
+    	var parameters = [];
+    	parameters.push([ 'term', terms ]);
+//    	parameters.push([ 'location', near ]);
+    	parameters.push([ 'll', position ]);
+    	parameters.push([ 'callback', 'cb' ]);
+    	parameters.push([ 'oauth_consumer_key', auth.consumerKey ]);
+    	parameters.push([ 'oauth_consumer_secret', auth.consumerSecret ]);
+    	parameters.push([ 'oauth_token', auth.accessToken ]);
+    	parameters.push([ 'oauth_signature_method', 'HMAC-SHA1' ]);
+
+    	var message = {
+    		'action' : 'http://api.yelp.com/v2/search',
+    		'method' : 'GET',
+    		'parameters' : parameters
+    	};
+
+    	OAuth.setTimestampAndNonce(message);
+    	OAuth.SignatureMethod.sign(message, accessor);
+
+    	var parameterMap = OAuth.getParameterMap(message.parameters);
+    	parameterMap.oauth_signature = OAuth
+    			.percentEncode(parameterMap.oauth_signature)
+//    	console.log(parameterMap);
+
+    	$.ajax({
+    		'async': false,
+    		'global': false,
+    		'url' : message.action,
+    		'data' : parameterMap,
+    		'cache' : true,
+    		'dataType' : 'jsonp',
+    		'jsonpCallback' : 'cb',
+    		'success' : function(data, textStats, XMLHttpRequest) {
+    			console.log(data);
+//    			alert(data.businesses[0].name + '\n' + 
+//    				data.businesses[0].rating + '\n' +
+//    				'latitude = ' + data.businesses[0].location.coordinate.latitude + '\n' +
+//    				'longitude = ' + data.businesses[0].location.coordinate.longitude + '\n' +
+//    				'total markers = ' + markers.length + '\n' +
+//    				'total restaurants yelp = ' + data.businesses.length 
+//    			);
+//    			$('#testDiv').append('<img src="'+ data.businesses[0].image_url +'">');
+    			
+    			// pour chaque restaurant de Yelp 
+    			for (i in data.businesses){
+    				var n = restaurants.length;
+    				var adresse = ""; // récupération de l'adresse situé dans un tableau
+    				for (j=0; j<3 ;j++) {
+    					if (j == 2) {
+    						adresse += data.businesses[i].location.display_address[j];
+    					} else {
+    						adresse += data.businesses[i].location.display_address[j] + ', ';
+    					}    					
+    				}
+    				// on ajoute le restaurant Yelp au tableau json restaurants
+    				restaurants[n] = {
+    					"restaurantName":data.businesses[i].name,
+    					"address":adresse,
+    					"lat":data.businesses[i].location.coordinate.latitude,
+    					"long":data.businesses[i].location.coordinate.longitude,
+    					"ratings":[]
+    				};
+    				// Récupère les avis du restaurant Yelp à partir de l'id du Restaurant sans accent
+//    				yelpBusiness(remplacerAccent(data.businesses[i].id), n);
+    				
+    				// ajout du restaurant Yelp à la liste à côté de la carte
+    				genererRestaurant(n); // ajout des infos du restaurants
+    				
+    				// ajoute le logo de yelp
+    				$('#restaurant'+n).append(
+    					'<div class="yelpLogo">'+
+    						'<img src="img/Yelp-logo.png" width=53 height=30>'+
+    					'</div>'
+    				);
+
+    				// ajout des notes et nombre d'avis Yelp
+    				$('#infoRestaurant'+n).append(
+    					'<img src="'+ data.businesses[i].rating_img_url +'"> ' +
+    					'<strong><span id="yelpNote'+n+'" style="color:orange; font-size:15px">'+ data.businesses[i].rating +'</span></strong>' +
+    					' - <span id="yelpTotalAvis'+n+'">'+ data.businesses[i].review_count +' avis</span> '+
+    					'<img src="img/Yelp-logo.png" width=36 height=20>'
+    				);
+    				// recalcule la moyenne des notes et le total d'avis en intégrant Yelp
+    				// mettre à jour la moyenne des avis et le nombre d'avis
+    				$('#moyenneAvis'+n).text(calculerMoyenneAvis(n));
+    				$('#textMoyenneAvis'+n).text(calculerMoyenneAvis(n));
+    				$('#nbAvis'+n).text((restaurants[n].ratings.length + data.businesses[i].review_count) + " avis");
+    				
+    				// on ajoute un marqueur personnalisé sur la carte et un événément associé quand on clique dessus
+    				ajouterMarqueur(map, data.businesses[i].location.coordinate.latitude, data.businesses[i].location.coordinate.longitude, "yelp");
+    				// ajout à la div collapse une div qui comprend l'id du restaurant
+    				$('#collapse'+n).append('<div id="'+remplacerAccent(data.businesses[i].id)+'"></div>');
+    			}
+    		}
+    	});
+    };
+
 };
 
 

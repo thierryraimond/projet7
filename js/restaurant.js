@@ -33,12 +33,7 @@ var propStreetView = {
 function genererListeRestaurants() {
 	for (i in restaurants) {
 		genererRestaurant(i);
-		for (j in restaurants[i].ratings) {				
-			$('#collapse'+i).append(
-				'<span style="color:orange; font-size:14px">' + restaurants[i].ratings[j].stars + '/5 '+'</span>'+
-				'<span style="font-size:12px">\"'+ restaurants[i].ratings[j].comment+'\"</span><br/>'
-			);
-		}	
+		genererAvisRestaurant(restaurants[i], i);
 	}
 };
 
@@ -53,12 +48,12 @@ function genererRestaurant(i) {
 		'&location=' + restaurants[i].lat + ',' + restaurants[i].long +
 		'&key=' + propStreetView.key;
 	$('#listeRestaurants').append(
-		'<a class="list-group-item" id="restaurant'+i+'" data-toggle="collapse" href="#collapse'+i+'">'+
+		'<a class="list-group-item" id="restaurant'+i+'" data-toggle="collapse" href="#collapse'+i+'" style="position:relative;">'+
 			'<div class="row">'+
 			    '<div class="col-xs-4" style="height:100%;">'+
 					'<img class="img-responsive" src="'+urlStreetView+'" />'+	            
 		        '</div>'+
-		        '<div class="clo-xs-8">'+
+		        '<div class="clo-xs-8" id="infoRestaurant'+i+'">'+
 					'<h4 class="list-group-item-heading">'+ restaurants[i].restaurantName +'</h4>'+
 					'<p class="list-group-item-text">'+
 						restaurants[i].address +'<br/>'+
@@ -100,6 +95,15 @@ function genererRestaurant(i) {
 	);
 };
 
+function genererAvisRestaurant(restaurant, index) {
+	for (j in restaurant.ratings) {				
+		$('#collapse'+index).append(
+			'<span style="color:orange; font-size:14px">' + restaurant.ratings[j].stars + '/5 '+'</span>'+
+			'<span style="font-size:12px">\"'+ restaurant.ratings[j].comment+'\"</span><br/>'
+		);
+	}
+};
+
 function ajouterRestaurant() {
 	var nom = $('#nomNouveauRestaurant').val();
 	var adresse = $('#adresseNouveauRestaurant').text();
@@ -134,17 +138,34 @@ function idEtoile (that){
 
 function calculerMoyenneAvis(index) {
 	var totalEtoile = 0;
+	var totalAvis = restaurants[index].ratings.length;
 	for (j in restaurants[index].ratings) {				
 		totalEtoile += restaurants[index].ratings[j].stars;
 	}
-	var moyenneAvis = (totalEtoile/restaurants[index].ratings.length).toFixed(1); // arrondit à 1 chiffre après la virgule
+	// si Yelp existe
+	if(typeof($('#yelpNote'+index).attr('id')) !== 'undefined') {
+		var noteYelp = parseFloat($('#yelpNote'+index).text());
+		var totalAvisYelp = parseInt($('#yelpTotalAvis'+index).text().replace(' avis',''));
+		totalEtoile += parseFloat(noteYelp*totalAvisYelp);
+		totalAvis += totalAvisYelp;
+		
+	}
+	var moyenneAvis = (totalEtoile/totalAvis).toFixed(1); // arrondit à 1 chiffre après la virgule
 	if (isNaN(moyenneAvis)){
 		moyenneAvis = 0;
 	}
 	return moyenneAvis;
 };
 
-
+// affiche le nombre total d'avis en intégrant Yelp si il existe
+function calculerTotalAvis(index) {
+	var totalAvis = restaurants[index].ratings.length;
+	// si Yelp existe
+	if(typeof($('#yelpTotalAvis'+index).attr('id')) !== 'undefined') {
+		totalAvis += parseInt($('#yelpTotalAvis'+index).text().replace(' avis',''));
+	}
+	return totalAvis;
+};
 
 
 

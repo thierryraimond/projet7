@@ -12,3 +12,11 @@
 	-webkit-justify-content: center; 
 	justify-content: center; 
 }
+.yelpLogo {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+.badge {
+    background-color : #d9534f;
+}
