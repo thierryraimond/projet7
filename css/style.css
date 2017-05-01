@@ -3,7 +3,7 @@
     height: 400px;
 /*     width: 100%; */
 }
-#listeRestaurants { padding-left:15px; }
+#listeRestaurants { padding-left:15px; overflow-y: scroll; height:600px; }
 .note { color: orange; }
 .star { color: grey; }
 .flex-center { 

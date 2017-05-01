@@ -62,7 +62,6 @@ function yelpBusiness(idRestaurant, index) {
 	var parameterMap = OAuth.getParameterMap(message.parameters);
 	parameterMap.oauth_signature = OAuth
 			.percentEncode(parameterMap.oauth_signature)
-//	console.log(parameterMap);
 
 	$.ajax({
 		'url' : message.action,
@@ -80,20 +79,10 @@ function yelpBusiness(idRestaurant, index) {
 					'<span style="font-size:12px">\"'+ data.reviews[j].excerpt+'\"</span><br/>';
 			}
 			$('#collapse'+index+ ' div').html(avis);
-			
-//			for (i in data.reviews) {
-//    			restaurants[index].ratings[i] = {
-//    				"stars":data.reviews[i].rating,
-//    				"comment":data.reviews[i].excerpt
-//    			};   			
-//			}
-//			alert(
-//				'index = ' +index + '\n'+
-//				'restaurants[index].restaurantName = ' + restaurants[index].restaurantName + '\n'+
-//				'restaurants[index].ratings[0].comment = ' + restaurants[index].ratings[0].comment
-//			);
-//			genererAvisRestaurant(restaurants[index], index); // ajout des avis du restaurant
 		}
 	});
 }; 
+
+
+
 

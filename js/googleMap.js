@@ -135,8 +135,7 @@ function initMap() {
     	}
     };
     
-//	afficherRestaurantsCarte(icons, map);
-	
+
     var infoWindow = new google.maps.InfoWindow({map: map});
 
     // Try HTML5 geolocation.
@@ -146,15 +145,17 @@ function initMap() {
     			lat: position.coords.latitude,
     			lng: position.coords.longitude
     		};
-    		
-    		// appel fonction yelp avec la position de l'utilisateur
-    		yelpSearch(pos.lat, pos.lng);
-    		
+    		   		
     		infoWindow.setPosition(pos);
     		infoWindow.setContent('Vous êtes ici.');
     		map.setCenter(pos);
     		marker.setPosition(pos);
     		marker.setAnimation(google.maps.Animation.BOUNCE);
+    		
+
+    		// appel fonction yelp avec la position de l'utilisateur
+    		yelpSearch(pos.lat, pos.lng, map.getBounds());
+    		
     	}, function() {
     		handleLocationError(true, infoWindow, map.getCenter());
     	});
@@ -176,16 +177,19 @@ function initMap() {
      *************************************************************/
     
     // yelp search
-    function yelpSearch(latitude, longitude) {
+    function yelpSearch(latitude, longitude, mapBounds) {
     	var terms = 'restaurants';
 //    	var near = 'San+Francisco';
-//    	var latitude = '37.788022';
-//    	var longitude = '-122.399797';
     	var position = latitude + ',' + longitude;
+//    	var bounds = mapBounds.getSouthWest().lat() + ',' + mapBounds.getSouthWest().lng() + '|' +
+//    		mapBounds.getNorthEast().lat() + ',' + mapBounds.getNorthEast().lng() ;
+
 
     	var parameters = [];
     	parameters.push([ 'term', terms ]);
 //    	parameters.push([ 'location', near ]);
+//    	parameters.push([ 'radius_filter', 400 ]);
+//    	parameters.push([ 'bounds', bounds ]);
     	parameters.push([ 'll', position ]);
     	parameters.push([ 'callback', 'cb' ]);
     	parameters.push([ 'oauth_consumer_key', auth.consumerKey ]);
@@ -205,7 +209,6 @@ function initMap() {
     	var parameterMap = OAuth.getParameterMap(message.parameters);
     	parameterMap.oauth_signature = OAuth
     			.percentEncode(parameterMap.oauth_signature)
-//    	console.log(parameterMap);
 
     	$.ajax({
     		'async': false,
@@ -216,16 +219,7 @@ function initMap() {
     		'dataType' : 'jsonp',
     		'jsonpCallback' : 'cb',
     		'success' : function(data, textStats, XMLHttpRequest) {
-    			console.log(data);
-//    			alert(data.businesses[0].name + '\n' + 
-//    				data.businesses[0].rating + '\n' +
-//    				'latitude = ' + data.businesses[0].location.coordinate.latitude + '\n' +
-//    				'longitude = ' + data.businesses[0].location.coordinate.longitude + '\n' +
-//    				'total markers = ' + markers.length + '\n' +
-//    				'total restaurants yelp = ' + data.businesses.length 
-//    			);
-//    			$('#testDiv').append('<img src="'+ data.businesses[0].image_url +'">');
-    			
+    			console.log(data);  			
     			// pour chaque restaurant de Yelp 
     			for (i in data.businesses){
     				var n = restaurants.length;
